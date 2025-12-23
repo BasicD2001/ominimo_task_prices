@@ -62,10 +62,10 @@ PRICES_CASE_2 = {
 
 
 PRICES_CASE_3 = {
-    "mtpl": 400,
-    "limited_casco_compact_100": 700,
-    "limited_casco_compact_200": 720,
-    "limited_casco_compact_500": 740,
+   "mtpl": 400,
+    "limited_casco_compact_100": 820,
+    "limited_casco_compact_200": 760,
+    "limited_casco_compact_500": 650,
     "limited_casco_basic_100": 900,
     "limited_casco_basic_200": 780,
     "limited_casco_basic_500": 600,
@@ -86,5 +86,5 @@ PRICES_CASE_3 = {
     "casco_comfort_500": 720,
     "casco_premium_100": 1050,
     "casco_premium_200": 950,
-    "casco_premium_500": 1040,
+    "casco_premium_500": 1040
 }

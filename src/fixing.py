@@ -23,7 +23,7 @@ def scale_product(items: List[PriceElement], prices: Dict[str, int], product: st
     return changed
 
 
-def apply_deductible_schedule(group: List[PriceElement], prices: Dict[str, int], base: int) -> bool:
+def scale_deductable(group: List[PriceElement], prices: Dict[str, int], base: int) -> bool:
     changed = False
     for it in group:
         r = get_deductible_rank(it.deductible)
@@ -34,7 +34,7 @@ def apply_deductible_schedule(group: List[PriceElement], prices: Dict[str, int],
     return changed
 
 
-def apply_variant_schedule(group: List[PriceElement], prices: Dict[str, int], base: int) -> bool:
+def scale_variant(group: List[PriceElement], prices: Dict[str, int], base: int) -> bool:
     changed = False
     for it in group:
         r = get_variant_rank(it.variant)
@@ -130,7 +130,7 @@ def fix_products_inplace(
                             )
                             base = max_price_in_group(group, prices, lambda it: get_deductible_rank(it.deductible) == 1)
                             if base is not None:
-                                changed |= apply_deductible_schedule(group, prices, base)
+                                changed |= scale_deductable(group, prices, base)
 
                     # variant schedule within same product+deductible
                     if (not a_is_core) and (not b_is_core) and (da == db) and (va != vb):
@@ -149,7 +149,7 @@ def fix_products_inplace(
                             )
                             base = max_price_in_group(group, prices, lambda it: get_variant_rank(it.variant) == 1)
                             if base is not None:
-                                changed |= apply_variant_schedule(group, prices, base)
+                                changed |= scale_variant(group, prices, base)
 
         if not changed:
             break

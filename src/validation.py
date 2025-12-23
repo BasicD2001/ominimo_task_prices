@@ -36,7 +36,6 @@ def detect_inconsistencies(items: List[PriceElement], prices: Dict[str, int]) ->
             if (
                 a.product != b.product
                 and a.product not in core_product
-                and b.product not in core_product
                 and a.variant == b.variant
                 and a.deductible == b.deductible
             ):
@@ -56,7 +55,6 @@ def detect_inconsistencies(items: List[PriceElement], prices: Dict[str, int]) ->
             if (
                 a.product == b.product
                 and a.product not in core_product
-                and b.product not in core_product
                 and a.deductible == b.deductible
             ):
                 va = get_variant_rank(a.variant)
