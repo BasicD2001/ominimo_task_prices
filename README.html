@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Insurance Product Price Validation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #222;
+    }
+    h1, h2, h3 {
+      color: #0a4b8c;
+    }
+    code, pre {
+      background: #f5f5f5;
+      padding: 4px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      padding: 12px;
+      overflow-x: auto;
+    }
+    ul {
+      margin-left: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Insurance Product Price Validation & Auto-Fixing</h1>
+
+<p>
+This project implements validation and automatic correction of insurance product prices
+according to a predefined hierarchy of products, variants, and deductibles.
+</p>
+
+<hr />
+
+<h2>Pricing Rules</h2>
+
+<ul>
+  <li><strong>By product level:</strong> MTPL &lt; Limited Casco &lt; Casco</li>
+  <li><strong>By variant (Limited/Casco):</strong> Compact / Basic &lt; Comfort &lt; Premium</li>
+  <li><strong>By deductible (Limited/Casco):</strong> 100€ &lt; 200€ &lt; 500€ (higher deductible → cheaper price)</li>
+</ul>
+
+<hr />
+
+<h2>Core Design Idea</h2>
+
+<p>
+All ordering rules are implemented using <strong>priorities</strong>, stored in dictionaries.
+Each product, variant, and deductible is mapped to a numeric rank.
+</p>
+
+<p>
+The code operates only on these numeric priorities, making the solution
+<strong>scalable</strong> and easy to extend.
+</p>
+
+<hr />
+
+<h2>Main Components</h2>
+
+<h3>1. Parsing – <code>build_price_items</code></h3>
+
+<p>
+Input prices are provided as a dictionary <code>{key → price}</code>.
+Each key is parsed into a structured object:
+</p>
+
+<pre>
+PriceElement(
+  key="limited_casco_basic_200",
+  product="limited_casco",
+  variant="basic",
+  deductible=200
+)
+</pre>
+
+<p>
+Each product is represented by a <code>PriceElement</code>, which:
+</p>
+
+<ul>
+  <li>stores product / variant / deductible priorities</li>
+  <li>keeps the original key for in-place price updates</li>
+</ul>
+
+<hr />
+
+<h3>2. Validation – <code>detect_inconsistencies</code></h3>
+
+<p>
+Validation is performed by comparing <strong>all pairs</strong> of products
+against the pricing rules.
+</p>
+
+<p>
+The function returns a human-readable report describing all detected violations.
+</p>
+
+<pre>
+PRODUCT ORDER (same variant+deductible):
+'limited_casco_basic_100' (900) should be cheaper than 'casco_basic_100' (830)
+</pre>
+
+<hr />
+
+<h3>3. Auto-Fixing – <code>fix_products_inplace</code></h3>
+
+<p>
+This function modifies the input price dictionary <strong>in place</strong>
+to resolve all detected inconsistencies.
+</p>
+
+<p>
+Fixing is done iteratively until no violations remain or a maximum number of iterations is reached.
+</p>
+
+<h4>Average Price Validation</h4>
+
+<p>
+The fixing logic relies on average product prices (<code>avg_prices</code>):
+</p>
+
+<ul>
+  <li>If not provided, default values are used:
+    <pre>
+MTPL = 400
+Limited Casco = 800
+Casco = 1200
+    </pre>
+  </li>
+  <li>Provided averages are validated:
+    <ul>
+      <li>All required products must be present</li>
+      <li>Higher priority products must have higher average prices</li>
+    </ul>
+  </li>
+  <li>If invalid, defaults are used or values are fixed by sorting</li>
+</ul>
+
+<hr />
+
+<h3>Fixing Strategies</h3>
+
+<h4>1. Product Disorder</h4>
+
+<p>
+Occurs when two products share the same variant and deductible,
+but the higher-priority product is cheaper.
+</p>
+
+<p><strong>Fix:</strong></p>
+
+<pre>
+factor = avg_price(higher_product) / avg_price(lower_product)
+new_price = lower_price * factor
+</pre>
+
+<ul>
+  <li><strong>MTPL vs others:</strong> entire higher product group is scaled</li>
+  <li><strong>Limited Casco vs Casco:</strong> only the conflicting price is adjusted</li>
+</ul>
+
+<hr />
+
+<h4>2. Deductible Disorder</h4>
+
+<p>
+Occurs when deductible ordering is violated within the same product and variant.
+</p>
+
+<p><strong>Fix:</strong></p>
+
+<pre>
+base = price(deductible=100)
+price(200) = base × 0.9
+price(500) = base × 0.9 × 0.9
+</pre>
+
+<hr />
+
+<h4>3. Variant Disorder</h4>
+
+<p>
+Occurs when variant ordering is violated within the same product and deductible.
+</p>
+
+<p><strong>Fix:</strong></p>
+
+<pre>
+base = max(price of lowest-priority variants)
+next_variant_price = base × 1.07
+</pre>
+
+<hr />
+
+<h2>Running the Project</h2>
+
+<h3>1. Install Dependencies</h3>
+
+<pre>
+pip install -r requirements.txt
+</pre>
+
+<h3>2. Run Example</h3>
+
+<pre>
+python -m src.examples
+</pre>
+
+<h3>3. Run Tests</h3>
+
+<pre>
+python -m pytest tests\test_parsing.py -q
+python -m pytest tests\test_validation.py -q
+python -m pytest tests\test_fixing.py -q
+</pre>
+
+<hr />
+
+<h2>Notes</h2>
+
+<ul>
+  <li>All test cases use the same set of product keys</li>
+  <li>Only prices vary between test cases</li>
+  <li>No external dependencies besides <code>pytest</code></li>
+</ul>
+
+</body>
+</html>
