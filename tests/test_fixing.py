@@ -1,12 +1,12 @@
 from src.parsing import build_price_items
 from src.validation import detect_inconsistencies
 from src.fixing import fix_products_inplace
-
+from src.fixing import validate_or_fix_avg_prices, DEFAULT_AVG_PRICES
 
 AVG_PRICES = {
     "mtpl": 400.0,
     "limited_casco": 800.0,
-    "casco": 900.0,
+    "casco": 1200.0,
 }
 
 
@@ -69,6 +69,25 @@ PRICES_CASE_2_NEEDS_FIX = {
 }
 
 
+def test_avg_prices_ok_when_sorted():
+    avg = {"mtpl": 200.0, "limited_casco": 500.0, "casco": 700.0}
+    out = validate_or_fix_avg_prices(avg, fix_by_sorting=True)
+    assert out == avg
+
+def test_avg_prices_wrong_order_fix_false_returns_default():
+    avg = {"mtpl": 700.0, "limited_casco": 800.0, "casco": 400.0}
+    out = validate_or_fix_avg_prices(avg, fix_by_sorting=False)
+    assert out == DEFAULT_AVG_PRICES
+
+def test_avg_prices_wrong_order_fix_true_sorts_and_assigns_by_rank():
+    avg = {"mtpl": 700.0, "limited_casco": 800.0, "casco": 400.0}
+    out = validate_or_fix_avg_prices(avg, fix_by_sorting=True)
+    assert out == {"mtpl": 400.0, "limited_casco": 700.0, "casco": 800.0}
+
+def test_avg_prices_none_returns_default():
+    out = validate_or_fix_avg_prices()
+    assert out == DEFAULT_AVG_PRICES
+
 def test_fix_keeps_valid_case_valid():
     prices = dict(PRICES_CASE_1_VALID)
     items = build_price_items(prices)
@@ -76,7 +95,7 @@ def test_fix_keeps_valid_case_valid():
     before = detect_inconsistencies(items, prices)
     assert before.strip() == ""
 
-    fix_products_inplace(items, prices, avg_prices=AVG_PRICES, max_iters=20)
+    fix_products_inplace(items, prices, avg_prices=DEFAULT_AVG_PRICES, max_iters=20)
 
     after = detect_inconsistencies(items, prices)
     assert after.strip() == ""
@@ -85,11 +104,11 @@ def test_fix_keeps_valid_case_valid():
 def test_fix_removes_inconsistencies():
     prices = dict(PRICES_CASE_2_NEEDS_FIX)
     items = build_price_items(prices)
-
+    avg = {"mtpl": 700.0, "limited_casco": 800.0, "casco": 400.0}
     before = detect_inconsistencies(items, prices)
     assert before.strip() != ""
 
-    fix_products_inplace(items, prices, avg_prices=AVG_PRICES, max_iters=50)
+    fix_products_inplace(items, prices, avg_prices=avg, max_iters=50)
 
     after = detect_inconsistencies(items, prices)
     assert after.strip() == ""

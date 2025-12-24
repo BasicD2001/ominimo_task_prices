@@ -1,6 +1,6 @@
 # src/ominimo_task/fixing.py
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .models import PriceElement
 from .ranks import (
@@ -8,8 +8,14 @@ from .ranks import (
     get_product_rank,
     get_variant_rank,
     is_core_product,
+    product_rank
+
 )
 from .utils import group_items, max_price_in_group, min_price_in_group
+
+
+DEFAULT_AVG_PRICES: Dict[str, float] = {"mtpl": 400.0, "limited_casco": 800.0, "casco": 1200.0}
+
 
 
 def scale_product(items: List[PriceElement], prices: Dict[str, int], product: str, factor: float) -> bool:
@@ -46,12 +52,72 @@ def scale_variant(group: List[PriceElement], prices: Dict[str, int], base: int) 
     return changed
 
 
+
+def validate_or_fix_avg_prices(
+    avg_prices: Optional[Dict[str, float]] = None,
+    default_avg_prices: Dict[str, float] = DEFAULT_AVG_PRICES,
+    fix_by_sorting: bool = True,
+) -> Dict[str, float]:
+    
+    # required_products= {mtpl, limited_casco, casco}
+    required_products = list(product_rank.keys())
+
+    # if nothing provided, use DEFAULT_AVG_PRICES
+    if avg_prices is None:
+        return dict(default_avg_prices)
+
+    # must contain all required products
+    for p in required_products:
+        if p not in avg_prices:
+            return dict(default_avg_prices)
+
+    # values must be numeric and > 0
+    values: Dict[str, float] = {}
+    for p in required_products:
+        try:
+            v = float(avg_prices[p])
+        except (TypeError, ValueError):
+            return dict(default_avg_prices)
+
+        if v <= 0:
+            return dict(default_avg_prices)
+
+        values[p] = v
+    # from now, values is valid prices dictionary
+
+    # sort products by rank (1,2,3...) and check monotonicity
+    prods_by_rank = sorted(required_products, key=product_rank.get)
+    seq = [values[p] for p in prods_by_rank]
+
+    ok = True
+    for i in range(len(seq) - 1):
+        if seq[i] > seq[i + 1]:
+            ok = False
+            break
+
+    if ok:
+        return values
+
+    # if fix_by_sorting== True, sort prices and use it as avg_prices, if not use DEFAULT_AVG_PRICES instead
+    if fix_by_sorting:
+        sorted_vals = sorted(seq)
+        fixed: Dict[str, float] = {}
+        for i, p in enumerate(prods_by_rank):
+            fixed[p] = sorted_vals[i]
+        return fixed
+
+    return dict(default_avg_prices)
+
+
 def fix_products_inplace(
     items: List[PriceElement],
     prices: Dict[str, int],
-    avg_prices: Dict[str, float],
+    avg_prices: Optional[Dict[str, float]] = None,
     max_iters: int = 10,
 ) -> None:
+    
+    avg_prices = validate_or_fix_avg_prices(avg_prices)
+
     for _ in range(max_iters):
         changed = False
         n = len(items)
