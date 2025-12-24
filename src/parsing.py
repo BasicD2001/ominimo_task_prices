@@ -23,7 +23,7 @@ def parse_price_key(input_key: str) -> PriceElement:
     raise ValueError(f"Unrecognized key format: {input_key!r}")
 
 
-def build_price_items(prices: Dict[str, int]) -> List[PriceElement]:
+def build_price_elements(prices: Dict[str, int]) -> List[PriceElement]:
     items: List[PriceElement] = []
     for input_key in prices.keys():
         if input_key in core_product:

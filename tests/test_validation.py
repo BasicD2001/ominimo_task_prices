@@ -1,4 +1,4 @@
-from src.parsing import build_price_items
+from src.parsing import build_price_elements
 from src.validation import detect_inconsistencies
 
 
@@ -154,32 +154,32 @@ PRICES_CASE_5_VARIANT_ORDER_FAIL = {
 
 
 def test_case_1_has_no_inconsistencies():
-    items = build_price_items(PRICES_CASE_1_VALID)
+    items = build_price_elements(PRICES_CASE_1_VALID)
     report = detect_inconsistencies(items, PRICES_CASE_1_VALID)
     assert report.strip() == ""
 
 
 def test_case_2_detects_product_order_same_variant_deductible():
-    items = build_price_items(PRICES_CASE_2_PRODUCT_ORDER_FAIL)
+    items = build_price_elements(PRICES_CASE_2_PRODUCT_ORDER_FAIL)
     report = detect_inconsistencies(items, PRICES_CASE_2_PRODUCT_ORDER_FAIL)
     assert "PRODUCT ORDER (same variant+deductible)" in report
 
 
 def test_case_3_detects_deductible_order():
-    items = build_price_items(PRICES_CASE_3_DEDUCTIBLE_ORDER_FAIL)
+    items = build_price_elements(PRICES_CASE_3_DEDUCTIBLE_ORDER_FAIL)
     report = detect_inconsistencies(items, PRICES_CASE_3_DEDUCTIBLE_ORDER_FAIL)
     assert "DEDUCTIBLE ORDER" in report
 
 
 
 def test_case_4_detects_product_order_example_from_task():
-    items = build_price_items(PRICES_CASE_4_EXAMPLE_FROM_TASK)
+    items = build_price_elements(PRICES_CASE_4_EXAMPLE_FROM_TASK)
     report = detect_inconsistencies(items, PRICES_CASE_4_EXAMPLE_FROM_TASK)
     assert "PRODUCT ORDER (same variant+deductible)" in report
 
 
 
 def test_case_5_detects_variant_order():
-    items = build_price_items(PRICES_CASE_5_VARIANT_ORDER_FAIL)
+    items = build_price_elements(PRICES_CASE_5_VARIANT_ORDER_FAIL)
     report = detect_inconsistencies(items, PRICES_CASE_5_VARIANT_ORDER_FAIL)
     assert "VARIANT ORDER" in report

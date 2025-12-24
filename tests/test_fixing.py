@@ -1,4 +1,4 @@
-from src.parsing import build_price_items
+from src.parsing import build_price_elements
 from src.validation import detect_inconsistencies
 from src.fixing import fix_products_inplace
 from src.fixing import validate_or_fix_avg_prices, DEFAULT_AVG_PRICES
@@ -90,7 +90,7 @@ def test_avg_prices_none_returns_default():
 
 def test_fix_keeps_valid_case_valid():
     prices = dict(PRICES_CASE_1_VALID)
-    items = build_price_items(prices)
+    items = build_price_elements(prices)
 
     before = detect_inconsistencies(items, prices)
     assert before.strip() == ""
@@ -103,7 +103,7 @@ def test_fix_keeps_valid_case_valid():
 
 def test_fix_removes_inconsistencies():
     prices = dict(PRICES_CASE_2_NEEDS_FIX)
-    items = build_price_items(prices)
+    items = build_price_elements(prices)
     avg = {"mtpl": 700.0, "limited_casco": 800.0, "casco": 400.0}
     before = detect_inconsistencies(items, prices)
     assert before.strip() != ""

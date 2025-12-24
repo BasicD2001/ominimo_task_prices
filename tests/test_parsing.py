@@ -1,6 +1,6 @@
 import pytest
 
-from src.parsing import parse_price_key, build_price_items
+from src.parsing import parse_price_key, build_price_elements
 
 
 def test_parse_mtpl_raises():
@@ -24,7 +24,7 @@ def test_parse_limited_casco_key():
 
 def test_build_price_items_includes_core_product():
     prices = {"mtpl": 400, "casco_basic_200": 760}
-    items = build_price_items(prices)
+    items = build_price_elements(prices)
 
     mtpl_item = next(x for x in items if x.key == "mtpl")
     assert mtpl_item.product == "mtpl"
@@ -35,7 +35,7 @@ def test_build_price_items_includes_core_product():
 def test_build_price_items_parses_non_core_product():
     prices = {"casco_basic_200": 760}
 
-    items = build_price_items(prices)
+    items = build_price_elements(prices)
 
     assert len(items) == 1
     item = items[0]

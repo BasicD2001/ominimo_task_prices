@@ -1,6 +1,6 @@
 from typing import Dict
 
-from src.parsing import build_price_items
+from src.parsing import build_price_elements
 from src.validation import detect_inconsistencies
 from src.fixing import fix_products_inplace
 
@@ -14,7 +14,7 @@ def print_prices(prices: Dict[str, int]) -> None:
 
 def run_case(case_name: str, prices: Dict[str, int]) -> None:
     prices_local = dict(prices)
-    items = build_price_items(prices_local)
+    items = build_price_elements(prices_local)
 
     
 
