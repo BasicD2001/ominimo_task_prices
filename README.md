@@ -186,9 +186,9 @@ but higher deductible is more expensive
 
 
 **Fix strategy:**
-deductible_100 = base
-deductible_200 = base * 0.9
-deductible_500 = base * 0.9 * 0.9
+- deductible_100 = base
+- deductible_200 = base * 0.9
+- deductible_500 = base * 0.9 * 0.9
 
 
 
@@ -206,40 +206,10 @@ but a lower-priority variant is more expensive
 
 **Fix strategy:**
 - Use the highest-priority variant price as base
-- Increase each subsequent variant by 7%
+- Increase each subsequent variant by 7% ( same way as variant disorder )
 
 ---
 
-## Running the Project
 
-### Install dependencies
-```bash
-pip install -r requirements.txt
-```
 
-### Run example
-```bash
-python -m src.examples
-```
-### Running Tests
 
-```bash
-python -m pytest -q
-```
-
-### Project Structure
-
-```bash
-src/
-├── parsing.py
-├── validation.py
-├── fixing.py
-├── models.py
-├── ranks.py
-├── utils.py
-├── examples.py
-tests/
-├── test_parsing.py
-├── test_validation.py
-├── test_fixing.py
-```
