@@ -157,10 +157,7 @@ def fix_products_inplace(
 
                     if lower_price >= higher_price:
                         # same variant+deductible scaling (non-core to non-core)
-                        if (
-                            (not lower_is_core)
-                            and (not higher_is_core)
-                            and (lower.variant == higher.variant)
+                        if ((lower.variant == higher.variant)
                             and (lower.deductible == higher.deductible)
                         ):
                             old_h = prices[higher.key]
@@ -171,7 +168,7 @@ def fix_products_inplace(
                                 changed =True
 
                         # core vs non-core scaling using min of higher product
-                        if lower_is_core and (not higher_is_core):
+                        if lower_is_core:
                             old_min = min_price_in_group(items, prices, lambda it: it.product == higher.product)
                             if old_min is not None and old_min != 0:
                                 new_min = int(round(lower_price * ratio))
@@ -180,7 +177,7 @@ def fix_products_inplace(
 
                 else:
                     # deductible schedule within same product+variant
-                    if (not a_is_core) and (not b_is_core) and (va == vb) and (da != db):
+                    if  (va == vb) and (da != db):
                         lower_d, higher_d = (a, b) if da < db else (b, a)
                         lower_price = prices[lower_d.key]
                         higher_price = prices[higher_d.key]
@@ -199,7 +196,7 @@ def fix_products_inplace(
                                 changed |= scale_deductable(group, prices, base)
 
                     # variant schedule within same product+deductible
-                    if (not a_is_core) and (not b_is_core) and (da == db) and (va != vb):
+                    if  (da == db) and (va != vb):
                         lower_v, higher_v = (a, b) if va < vb else (b, a)
                         lower_price = prices[lower_v.key]
                         higher_price = prices[higher_v.key]
