@@ -3,8 +3,7 @@ from typing import Dict
 from src.parsing import build_price_elements
 from src.validation import detect_inconsistencies
 from src.fixing import fix_products_inplace
-
-from src.cases import AVG_PRICES, PRICES_CASE_1, PRICES_CASE_2, PRICES_CASE_3
+from .utils import AVG_PRICES, PRICES_CASE_1, PRICES_CASE_2, PRICES_CASE_3
 
 
 def print_prices(prices: Dict[str, int]) -> None:

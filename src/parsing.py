@@ -1,8 +1,7 @@
 
 from typing import Dict, List
 
-from .models import PriceElement
-from .ranks import core_product
+from .utils import PriceElement, core_product
 
 
 def parse_price_key(input_key: str) -> PriceElement:

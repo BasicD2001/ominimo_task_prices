@@ -46,10 +46,8 @@ src/
 ├── parsing.py
 ├── validation.py
 ├── fixing.py
-├── models.py
-├── ranks.py
 ├── utils.py
-├── examples.py
+├── main.py
 tests/
 ├── test_parsing.py
 ├── test_validation.py

@@ -1,17 +1,7 @@
-# src/ominimo_task/fixing.py
 
 from typing import Dict, List, Optional
 
-from .models import PriceElement
-from .ranks import (
-    get_deductible_rank,
-    get_product_rank,
-    get_variant_rank,
-    is_core_product,
-    product_rank
-
-)
-from .utils import group_items, max_price_in_group, min_price_in_group
+from .utils import PriceElement, group_items, max_price_in_group, min_price_in_group, get_deductible_rank, get_product_rank, get_variant_rank, is_core_product, product_rank
 
 
 DEFAULT_AVG_PRICES: Dict[str, float] = {"mtpl": 400.0, "limited_casco": 800.0, "casco": 1200.0}
@@ -191,7 +181,7 @@ def fix_products_inplace(
                                     and it.variant == a.variant
                                 ),
                             )
-                            base = max_price_in_group(group, prices, lambda it: get_deductible_rank(it.deductible) == 1)
+                            base = min_price_in_group(group, prices, lambda it: get_deductible_rank(it.deductible) == 1)
                             if base is not None:
                                 changed |= scale_deductable(group, prices, base)
 

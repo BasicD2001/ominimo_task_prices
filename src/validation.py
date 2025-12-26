@@ -1,9 +1,7 @@
-# src/ominimo_task/validation.py
 
 from typing import Dict, List
 
-from .models import PriceElement
-from .ranks import core_product, get_deductible_rank, get_product_rank, get_variant_rank
+from .utils import PriceElement, core_product, get_deductible_rank, get_product_rank, get_variant_rank
 
 
 def detect_inconsistencies(items: List[PriceElement], prices: Dict[str, int]) -> str:
